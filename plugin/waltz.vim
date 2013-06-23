@@ -38,14 +38,14 @@ let s:win_maps = [
 
 " Vim mappings
 
-function! s:map(maps, list)
+function! s:map(maps, cmds)
     let l:prep = {'n': '', 'i': s:leave_insert ? '<Esc>' : '<C-O>'}
-    for [keys, modes, code, dir] in a:maps
+    for [keys, modes, code, dirs] in a:maps
         if s:dir_keys == 2 || keys == s:dir_keys
             for lmode in modes
                 if s:esc_mappings || lmode != 'i' || code !~ '^<Esc>'
-                    for pos in range(len(a:list))
-                        execute lmode . 'noremap <silent> ' . printf(code, dir[pos]) . ' ' . l:prep[lmode] . a:list[pos]
+                    for pos in range(len(a:cmds))
+                        execute lmode . 'noremap <silent> ' . printf(code, dirs[pos]) . ' ' . l:prep[lmode] . a:cmds[pos]
                     endfor
                 endif
             endfor
