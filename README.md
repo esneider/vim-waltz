@@ -9,6 +9,14 @@ and through tabs with _Alt_ + _Shift_ + { _Right_ - _Left_ }.
 Options
 -------
 
+### The `g:waltz_dir_keys` option
+
+If 0, use arrow keys.
+If 1, use _h_, _j_, _k_, _l_ keys.
+If 2, use both.
+
+**Default:** 0
+
 ### The `g:waltz_leave_insert` option
 
 If true, when triggered from insert mode it will exit and leave the window in
