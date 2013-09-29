@@ -17,6 +17,7 @@ let s:alt_maps = [
 \   [0, ['n', 'i'], '<Esc>[1;3%s',   ['A', 'B', 'C', 'D']],
 \   [0, ['n', 'i'], '<Esc>[1;9%s',   ['A', 'B', 'C', 'D']],
 \   [0, ['n', 'i'], '<T-%s>',        ['Up', 'Down', 'Right', 'Left']],
+\   [0, ['n', 'i'], '<A-%s>',        ['Up', 'Down', 'Right', 'Left']],
 \   [0, ['n', 'i'], '<M-%s>',        ['Up', 'Down', 'Right', 'Left']],
 \   [1, ['n', 'i'], '<Esc>%s',       ['k', 'j', 'l', 'h']],
 \   [1, ['n'],      '%s',            ['˚', '∆', '¬', '˙']],
@@ -30,6 +31,7 @@ let s:shift_alt_maps = [
 \   [0, ['n', 'i'], '<Esc>[1;4%s',  ['A', 'B', 'C', 'D']],
 \   [0, ['n', 'i'], '<Esc>[1;10%s', ['A', 'B', 'C', 'D']],
 \   [0, ['n', 'i'], '<T-S-%s>',     ['Up', 'Down', 'Right', 'Left']],
+\   [0, ['n', 'i'], '<A-S-%s>',     ['Up', 'Down', 'Right', 'Left']],
 \   [0, ['n', 'i'], '<M-S-%s>',     ['Up', 'Down', 'Right', 'Left']],
 \   [1, ['n', 'i'], '<Esc>%s',      ['K', 'J', 'L', 'H']],
 \   [1, ['n'],      '%s',           ['', 'Ô', 'Ó', 'Ò']],
@@ -56,6 +58,9 @@ function! s:map(maps, cmds)
     endfor
 endfunction
 
-call s:map(s:alt_maps, s:alt_cmds)
-call s:map(s:shift_alt_maps, s:shift_alt_cmds)
+function! s:apply()
+    call s:map(s:alt_maps, s:alt_cmds)
+    call s:map(s:shift_alt_maps, s:shift_alt_cmds)
+endfunction
 
+autocmd VimEnter * call s:apply()
