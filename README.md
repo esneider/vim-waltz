@@ -1,7 +1,6 @@
-waltz.vim
-=========
+# waltz.vim #
 
-Waltz is a simple plugin to enable window and tab navigation with the Alt key.
+Waltz is a VIM plugin that provides a portable way of mapping the Alt key.
 
 You can move through windows with _Alt_ + { _Up_ - _Down_ - _Right_ - _Left_ }
 and through tabs with _Alt_ + _Shift_ + { _Right_ - _Left_ }.

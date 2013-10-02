@@ -1,7 +1,8 @@
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" File: waltz.vim: portably map Alt+Arrows and Alt+Shit+Arrows
-" Author: Dario Sneidermanis
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" File:        plugin/waltz.vim
+" Description: Portably map Alt-Arrows and Alt-Shit-Arrows.
+" Author:      Dario Sneidermanis <github.com/esneider>
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 if exists("g:loaded_waltz")
     finish
@@ -39,7 +40,6 @@ let s:alt_maps = [
 \   [0, ['n', 'i'], '<Esc>[1;3%s',   ['A', 'B', 'C', 'D']],
 \   [0, ['n', 'i'], '<Esc>[1;9%s',   ['A', 'B', 'C', 'D']],
 \   [0, ['n', 'i'], '<T-%s>',        ['Up', 'Down', 'Right', 'Left']],
-\   [0, ['n', 'i'], '<A-%s>',        ['Up', 'Down', 'Right', 'Left']],
 \   [0, ['n', 'i'], '<M-%s>',        ['Up', 'Down', 'Right', 'Left']],
 \   [1, ['n', 'i'], '<Esc>%s',       ['k', 'j', 'l', 'h']],
 \   [1, ['n'],      '%s',            ['˚', '∆', '¬', '˙']],
@@ -53,7 +53,6 @@ let s:shift_alt_maps = [
 \   [0, ['n', 'i'], '<Esc>[1;4%s',  ['A', 'B', 'C', 'D']],
 \   [0, ['n', 'i'], '<Esc>[1;10%s', ['A', 'B', 'C', 'D']],
 \   [0, ['n', 'i'], '<T-S-%s>',     ['Up', 'Down', 'Right', 'Left']],
-\   [0, ['n', 'i'], '<A-S-%s>',     ['Up', 'Down', 'Right', 'Left']],
 \   [0, ['n', 'i'], '<M-S-%s>',     ['Up', 'Down', 'Right', 'Left']],
 \   [1, ['n', 'i'], '<Esc>%s',      ['K', 'J', 'L', 'H']],
 \   [1, ['n'],      '%s',           ['', 'Ô', 'Ó', 'Ò']],
