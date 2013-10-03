@@ -55,7 +55,7 @@ let s:keycodes = {
 \   '9': {'low': '9', 'up': '(', 'mac_low': 'ª', 'mac_up': '·'},
 \}
 
-let s:alt_maps = {
+let s:alt_lhs = {
 \   'dir_up': {
 \       '<Esc><Esc>[%s': 'ni',
 \       '<Esc>[1;3%s': 'ni',
@@ -76,7 +76,7 @@ let s:alt_maps = {
 \   },
 \}
 
-let s:shift_alt_maps = {
+let s:shift_alt_lhs = {
 \   'dir_up': {
 \       '<Esc>[1;4%s':  'ni',
 \       '<Esc>[1;10%s': 'ni',
@@ -97,7 +97,7 @@ let s:shift_alt_maps = {
 \   },
 \}
 
-function s:exec_map(cmd)
+function s:map(cmd)
 
     let l:expr = a:cmd.mode
     let l:expr .= a:cmd.noremap ? 'noremap '  : 'map '
@@ -109,25 +109,25 @@ function s:exec_map(cmd)
     execute l:expr
 endf
 
-function s:map(maps, cmd)
+function s:find_lhs(lhs_dic, cmd)
 
     for [type, code] in items(s:keycodes[a:cmd.key])
-        if !empty(code) && has_key(a:maps, type)
+        if !empty(code) && has_key(a:lhs_dic, type)
 
-            for [lhs, modes] in items(a:maps[type])
+            for [lhs, modes] in items(a:lhs_dic[type])
                 if stridx(modes, a:cmd.mode) >= 0
 
                     let a:cmd.lhs = printf(lhs, code)
-                    call s:exec_map(a:cmd)
+                    call s:map(a:cmd)
                 endif
             endfor
         endif
     endfor
 endf
 
-function s:plug_maps(plug, maps)
+function s:find_mappings(plug, lhs_dic)
 
-    for mmode in split('n', '\zs')
+    for mmode in split('nvoicsxl', '\zs')
         for key in keys(s:keycodes)
 
             let l:cmd = maparg(printf(a:plug, key), mmode, 0, 1)
@@ -135,7 +135,7 @@ function s:plug_maps(plug, maps)
             if !empty(l:cmd)
 
                 let l:cmd.key = key
-                call s:map(a:maps, l:cmd)
+                call s:find_lhs(a:lhs_dic, l:cmd)
             endif
         endfor
     endfor
@@ -146,8 +146,8 @@ function s:apply()
     let l:save_cpo = &cpo
     set cpo&vim
 
-    call s:plug_maps('<Plug>Waltz<M-%s>', s:alt_maps)
-    call s:plug_maps('<Plug>Waltz<M-S-%s>', s:shift_alt_maps)
+    call s:find_mappings('<Plug>Waltz<M-%s>', s:alt_lhs)
+    call s:find_mappings('<Plug>Waltz<M-S-%s>', s:shift_alt_lhs)
 
     let &cpo = l:save_cpo
 endf
