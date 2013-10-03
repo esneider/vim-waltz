@@ -149,8 +149,8 @@ function s:apply()
     let l:save_cpo = &cpo
     set cpo&vim
 
-    call s:find_mappings('<Plug>Waltz<M-%s>', s:alt_lhs)
-    call s:find_mappings('<Plug>Waltz<M-S-%s>', s:alt_shift_lhs)
+    call s:find_mappings('<Plug><M-%s>', s:alt_lhs)
+    call s:find_mappings('<Plug><M-S-%s>', s:alt_shift_lhs)
 
     let &cpo = l:save_cpo
 endf
