@@ -1,6 +1,6 @@
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " File:        plugin/waltz.vim
-" Description: Portably map Alt-Arrows and Alt-Shit-Arrows.
+" Description: Portably map Alt key combinations
 " Author:      Dario Sneidermanis <github.com/esneider>
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
@@ -13,10 +13,10 @@ let g:loaded_waltz = 1
 let s:esc_mappings = get(g:, 'waltz_esc_mappings', 0)
 
 let s:keycodes = {
-\   'up':    {'dir_up': 'A', 'literal': 'Up'   },
-\   'down':  {'dir_up': 'B', 'literal': 'Down' },
-\   'right': {'dir_up': 'C', 'literal': 'Right'},
-\   'left':  {'dir_up': 'D', 'literal': 'Left' },
+\   'Up':    {'dir_up': 'A', 'literal': 'Up'   },
+\   'Down':  {'dir_up': 'B', 'literal': 'Down' },
+\   'Right': {'dir_up': 'C', 'literal': 'Right'},
+\   'Left':  {'dir_up': 'D', 'literal': 'Left' },
 \   'a': {'low': 'a', 'up': 'A', 'mac_low': 'å', 'mac_up': 'Å'},
 \   'b': {'low': 'b', 'up': 'B', 'mac_low': '∫', 'mac_up': 'ı'},
 \   'c': {'low': 'c', 'up': 'C', 'mac_low': 'ç', 'mac_up': 'Ç'},
@@ -56,95 +56,100 @@ let s:keycodes = {
 \}
 
 let s:alt_maps = {
-
-    let &cpo = l:save_cpo
 \   'dir_up': {
-\       '<Esc><Esc>[%s': ['n', 'i'],
-\       '<Esc>[1;3%s':   ['n', 'i'],
-\       '<Esc>[1;9%s':   ['n', 'i'],
-\       '<Esc>[%s':      ['n'],
+\       '<Esc><Esc>[%s': 'ni',
+\       '<Esc>[1;3%s': 'ni',
+\       '<Esc>[1;9%s': 'ni',
+\       '<Esc>[%s': 'n',
 \   },
 \   'literal': {
-\       '<T-%s>': ['n', 'i'],
-\       '<M-%s>': ['n', 'i'],
+\       '<T-%s>': 'ni',
+\       '<M-%s>': 'ni',
 \   },
 \   'low': {
-\       '<Esc>%s': ['n', 'i'],
-\       '<T-%s>':  ['n', 'i'],
-\       '<M-%s>':  ['n', 'i'],
+\       '<Esc>%s': 'ni',
+\       '<T-%s>': 'ni',
+\       '<M-%s>': 'ni',
 \   },
 \   'mac_low': {
-\       '%s': ['n'],
+\       '%s': 'n',
 \   },
 \}
 
 let s:shift_alt_maps = {
 \   'dir_up': {
-\       '<Esc>[1;4%s':  ['n', 'i'],
-\       '<Esc>[1;10%s': ['n', 'i'],
+\       '<Esc>[1;4%s':  'ni',
+\       '<Esc>[1;10%s': 'ni',
 \   },
 \   'literal': {
-\       '<T-S-%s>': ['n', 'i'],
-\       '<M-S-%s>': ['n', 'i'],
+\       '<T-S-%s>': 'ni',
+\       '<M-S-%s>': 'ni',
 \   },
 \   'low': {
-\       '<T-S-%s>': ['n', 'i'],
-\       '<M-S-%s>': ['n', 'i'],
+\       '<T-S-%s>': 'ni',
+\       '<M-S-%s>': 'ni',
 \   },
 \   'up': {
-\       '<Esc>%s': ['n', 'i'],
+\       '<Esc>%s': 'ni',
 \   },
 \   'mac_up': {
-\       '%s': ['n'],
+\       '%s': 'n',
 \   },
 \}
 
-function! s:map(maps, types, cmd)
+function s:exec_map(cmd)
 
-    for [type, code] in items(a:types)
+    let l:expr = a:cmd.mode
+    let l:expr .= a:cmd.noremap ? 'noremap '  : 'map '
+    let l:expr .= a:cmd.silent  ? '<silent> ' : ''
+    let l:expr .= a:cmd.expr    ? '<expr> '   : ''
+    let l:expr .= a:cmd.buffer  ? '<buffer> ' : ''
+    let l:expr .= a:cmd.lhs . ' ' . a:cmd.rhs
+
+    execute l:expr
+endf
+
+function s:map(maps, cmd)
+
+    for [type, code] in items(s:keycodes[a:cmd.key])
         if !empty(code) && has_key(a:maps, type)
 
-            for [from, modes] in items(a:maps[type])
-                for lmode in modes
-                    if has_key(a:cmd, lmode)
+            for [lhs, modes] in items(a:maps[type])
+                if stridx(modes, a:cmd.mode) >= 0
 
-                        if s:esc_mappings || lmode != 'i' || code !~ '^<Esc>'
-
-                            let l:is_s = type(a:cmd) == 1
-
-                            let l:expr  = lmode . 'noremap '
-                            let l:expr .= l:is_s ? '' : join(a:cmd[0:-2]) . ' '
-                            let l:expr .= printf(from, code) . ' '
-                            let l:expr .= l:is_s ? a:cmd : a:cmd[-1]
-
-                            execute l:expr
-                        endif
-                    endif
-                endfor
+                    let a:cmd.lhs = printf(lhs, code)
+                    call s:exec_map(a:cmd)
+                endif
             endfor
         endif
     endfor
-endfunction
+endf
 
-function! s:check_globals(prefix, maps)
+function s:plug_maps(plug, maps)
 
-    for [key, types] in items(s:keycodes)
-        if exists('g:' . a:prefix . key)
-            call s:map(a:maps, types, get(g:, a:prefix . key))
-        endif
+    for mmode in split('n', '\zs')
+        for key in keys(s:keycodes)
+
+            let l:cmd = maparg(printf(a:plug, key), mmode, 0, 1)
+
+            if !empty(l:cmd)
+
+                let l:cmd.key = key
+                call s:map(a:maps, l:cmd)
+            endif
+        endfor
     endfor
-endfunction
+endf
 
-function! s:apply()
+function s:apply()
 
     let l:save_cpo = &cpo
     set cpo&vim
 
-    call s:check_globals('waltz_alt_', s:alt_maps)
-    call s:check_globals('waltz_alt_shift_', s:shift_alt_maps)
-    call s:check_globals('waltz_shift_alt_', s:shift_alt_maps)
+    call s:plug_maps('<Plug>Waltz<M-%s>', s:alt_maps)
+    call s:plug_maps('<Plug>Waltz<M-S-%s>', s:shift_alt_maps)
 
     let &cpo = l:save_cpo
-endfunction
+endf
 
 autocmd VimEnter * call s:apply()
