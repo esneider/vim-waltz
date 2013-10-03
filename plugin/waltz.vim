@@ -114,13 +114,16 @@ function s:find_lhs(lhs_dic, cmd)
     for [type, code] in items(s:keycodes[a:cmd.key])
         if !empty(code) && has_key(a:lhs_dic, type)
 
-            for [lhs, modes] in items(a:lhs_dic[type])
-                if stridx(modes, a:cmd.mode) >= 0
+            if s:esc_mappings || a:cmd.mode == 'n' || code !~ '^<Esc>'
 
-                    let a:cmd.lhs = printf(lhs, code)
-                    call s:map(a:cmd)
-                endif
-            endfor
+                for [lhs, modes] in items(a:lhs_dic[type])
+                    if stridx(modes, a:cmd.mode) >= 0
+
+                        let a:cmd.lhs = printf(lhs, code)
+                        call s:map(a:cmd)
+                    endif
+                endfor
+            endif
         endif
     endfor
 endf
