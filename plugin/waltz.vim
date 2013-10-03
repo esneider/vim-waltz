@@ -31,7 +31,7 @@ let s:keycodes = {
 \   'l': {'low': 'l', 'up': 'L', 'mac_low': '¬', 'mac_up': 'Ò'},
 \   'm': {'low': 'm', 'up': 'M', 'mac_low': 'µ', 'mac_up': 'Â'},
 \   'n': {'low': 'n', 'up': 'N', 'mac_low':  '', 'mac_up': '˜'},
-\   'o': {'low': 'o', 'up': 'O', 'mac_low': 'ø', 'mac_up': 'Ø'},
+\   'o': {'low': 'o', 'up':  '', 'mac_low': 'ø', 'mac_up': 'Ø'},
 \   'p': {'low': 'p', 'up': 'P', 'mac_low': 'π', 'mac_up': '∏'},
 \   'q': {'low': 'q', 'up': 'Q', 'mac_low': 'œ', 'mac_up': 'Œ'},
 \   'r': {'low': 'r', 'up': 'R', 'mac_low': '®', 'mac_up': '‰'},
@@ -76,7 +76,7 @@ let s:alt_lhs = {
 \   },
 \}
 
-let s:shift_alt_lhs = {
+let s:alt_shift_lhs = {
 \   'dir_up': {
 \       '<Esc>[1;4%s':  'ni',
 \       '<Esc>[1;10%s': 'ni',
@@ -150,7 +150,7 @@ function s:apply()
     set cpo&vim
 
     call s:find_mappings('<Plug>Waltz<M-%s>', s:alt_lhs)
-    call s:find_mappings('<Plug>Waltz<M-S-%s>', s:shift_alt_lhs)
+    call s:find_mappings('<Plug>Waltz<M-S-%s>', s:alt_shift_lhs)
 
     let &cpo = l:save_cpo
 endf
