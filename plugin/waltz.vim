@@ -43,16 +43,16 @@ let s:keycodes = {
 \   'x': {'low': 'x', 'up': 'X', 'mac_low': '≈', 'mac_up': '˛'},
 \   'y': {'low': 'y', 'up': 'Y', 'mac_low': '\', 'mac_up': 'Á'},
 \   'z': {'low': 'z', 'up': 'Z', 'mac_low': 'Ω', 'mac_up': '¸'},
-\   '0': {'low': '0', 'up': ')', 'mac_low': 'º', 'mac_up': '‚'},
-\   '1': {'low': '1', 'up': '!', 'mac_low': '¡', 'mac_up': '⁄'},
-\   '2': {'low': '2', 'up': '@', 'mac_low': '™', 'mac_up': '€'},
-\   '3': {'low': '3', 'up': '#', 'mac_low': '£', 'mac_up': '‹'},
-\   '4': {'low': '4', 'up': '$', 'mac_low': '¢', 'mac_up': '›'},
-\   '5': {'low': '5', 'up': '%', 'mac_low': '∞', 'mac_up': 'ﬁ'},
-\   '6': {'low': '6', 'up': '^', 'mac_low': '§', 'mac_up': 'ﬂ'},
-\   '7': {'low': '7', 'up': '&', 'mac_low': '¶', 'mac_up': '‡'},
-\   '8': {'low': '8', 'up': '*', 'mac_low': '•', 'mac_up': '°'},
-\   '9': {'low': '9', 'up': '(', 'mac_low': 'ª', 'mac_up': '·'},
+\   '0': {'low': '0', 'up':  '', 'mac_low': 'º', 'mac_up': '‚'},
+\   '1': {'low': '1', 'up':  '', 'mac_low': '¡', 'mac_up': '⁄'},
+\   '2': {'low': '2', 'up':  '', 'mac_low': '™', 'mac_up': '€'},
+\   '3': {'low': '3', 'up':  '', 'mac_low': '£', 'mac_up': '‹'},
+\   '4': {'low': '4', 'up':  '', 'mac_low': '¢', 'mac_up': '›'},
+\   '5': {'low': '5', 'up':  '', 'mac_low': '∞', 'mac_up': 'ﬁ'},
+\   '6': {'low': '6', 'up':  '', 'mac_low': '§', 'mac_up': 'ﬂ'},
+\   '7': {'low': '7', 'up':  '', 'mac_low': '¶', 'mac_up': '‡'},
+\   '8': {'low': '8', 'up':  '', 'mac_low': '•', 'mac_up': '°'},
+\   '9': {'low': '9', 'up':  '', 'mac_low': 'ª', 'mac_up': '·'},
 \}
 
 let s:alt_lhs = {
@@ -64,12 +64,10 @@ let s:alt_lhs = {
 \   },
 \   'literal': {
 \       '<T-%s>': 'ni',
-\       '<M-%s>': 'ni',
 \   },
 \   'low': {
 \       '<Esc>%s': 'ni',
 \       '<T-%s>': 'ni',
-\       '<M-%s>': 'ni',
 \   },
 \   'mac_low': {
 \       '%s': 'n',
@@ -83,11 +81,9 @@ let s:alt_shift_lhs = {
 \   },
 \   'literal': {
 \       '<T-S-%s>': 'ni',
-\       '<M-S-%s>': 'ni',
 \   },
 \   'low': {
 \       '<T-S-%s>': 'ni',
-\       '<M-S-%s>': 'ni',
 \   },
 \   'up': {
 \       '<Esc>%s': 'ni',
@@ -100,9 +96,9 @@ let s:alt_shift_lhs = {
 function s:map(cmd)
 
     let l:expr = a:cmd.mode
-    let l:expr .= a:cmd.noremap ? 'noremap '  : 'map '
+    let l:expr .= a:cmd.noremap ? 'noremap  ' : 'map '
     let l:expr .= a:cmd.silent  ? '<silent> ' : ''
-    let l:expr .= a:cmd.expr    ? '<expr> '   : ''
+    let l:expr .= a:cmd.expr    ? '<expr>   ' : ''
     let l:expr .= a:cmd.buffer  ? '<buffer> ' : ''
     let l:expr .= a:cmd.lhs . ' ' . a:cmd.rhs
 
@@ -128,14 +124,13 @@ function s:find_lhs(lhs_dic, cmd)
     endfor
 endf
 
-function s:find_mappings(plug, lhs_dic)
+function s:find_mappings(format, lhs_dic)
 
     for mmode in split('nvoicsxl', '\zs')
         for key in keys(s:keycodes)
 
-            let l:cmd = maparg(printf(a:plug, key), mmode, 0, 1)
-
-            if !empty(l:cmd)
+            silent! let l:cmd = maparg(printf(a:format, key), mmode, 0, 1)
+            silent! if !empty(l:cmd)
 
                 let l:cmd.key = key
                 call s:find_lhs(a:lhs_dic, l:cmd)
@@ -149,10 +144,10 @@ function s:apply()
     let l:save_cpo = &cpo
     set cpo&vim
 
-    call s:find_mappings('<Plug><M-%s>', s:alt_lhs)
-    call s:find_mappings('<Plug><M-S-%s>', s:alt_shift_lhs)
+    call s:find_mappings('<M-%s>', s:alt_lhs)
+    call s:find_mappings('<M-S-%s>', s:alt_shift_lhs)
 
     let &cpo = l:save_cpo
 endf
 
-autocmd VimEnter * call s:apply()
+call s:apply()
