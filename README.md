@@ -1,6 +1,6 @@
 # vim-waltz #
 
-Waltz is VIM plugin that provides a portable way of mapping the Alt key.
+Waltz is a VIM plugin that provides a portable way of mapping the Alt key.
 
 ## Usage ##
 
