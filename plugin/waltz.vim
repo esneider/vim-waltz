@@ -9,7 +9,6 @@ if exists("g:loaded_waltz")
 endif
 
 let g:loaded_waltz = 1
-
 let s:esc_mappings = get(g:, 'waltz_esc_mappings', 0)
 
 let s:keycodes = {
@@ -95,25 +94,26 @@ let s:alt_shift_lhs = {
 
 function s:map(cmd)
 
-    let l:expr = a:cmd.mode
+    let l:expr  = a:cmd.mode
     let l:expr .= a:cmd.noremap ? 'noremap  ' : 'map '
     let l:expr .= a:cmd.silent  ? '<silent> ' : ''
     let l:expr .= a:cmd.expr    ? '<expr>   ' : ''
     let l:expr .= a:cmd.buffer  ? '<buffer> ' : ''
+    let l:expr .= a:cmd.nowait  ? '<nowait> ' : ''
     let l:expr .= a:cmd.lhs . ' ' . a:cmd.rhs
 
     execute l:expr
 endf
 
-function s:find_lhs(lhs_dic, cmd)
+function s:find_lhs(cmd, key, lhs_dic)
 
-    for [type, code] in items(s:keycodes[a:cmd.key])
+    for [type, code] in items(s:keycodes[a:key])
         if !empty(code) && has_key(a:lhs_dic, type)
 
             for [lhs, modes] in items(a:lhs_dic[type])
                 if stridx(modes, a:cmd.mode) >= 0
 
-                    if s:esc_mappings || a:cmd.mode == 'n' || lhs !~ '^<Esc>'
+                    if s:esc_mappings || a:cmd.mode == 'n' || lhs !~? '^<Esc>'
 
                         let a:cmd.lhs = printf(lhs, code)
                         call s:map(a:cmd)
@@ -129,11 +129,24 @@ function s:find_mappings(format, lhs_dic)
     for mmode in split('nvoicsxl', '\zs')
         for key in keys(s:keycodes)
 
-            silent! let l:cmd = maparg(printf(a:format, key), mmode, 0, 1)
-            silent! if !empty(l:cmd)
+            let lhs = printf(a:format, key)
+            let rhs = maparg(lhs, mmode)
 
-                let l:cmd.key = key
-                call s:find_lhs(a:lhs_dic, l:cmd)
+            if !empty(rhs)
+
+                " This is an imperfect approximation to the full maparg(), but
+                " the last parameter of maparg(), dict, was added pretty
+                " recently (vim 7.3.032), so we need a backup solution.
+                let cmd = {
+                \   'rhs': rhs,
+                \   'mode': mmode,
+                \   'noremap': 1,
+                \}
+
+                " Since this might not work (see above) we have to use silent.
+                silent! let cmd = maparg(lhs, mmode, 0, 1)
+
+                call s:find_lhs(cmd, key, a:lhs_dic)
             endif
         endfor
     endfor
