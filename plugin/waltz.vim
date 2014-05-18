@@ -95,11 +95,11 @@ let s:alt_shift_lhs = {
 function s:map(cmd)
 
     let l:expr  = a:cmd.mode
-    let l:expr .= a:cmd.noremap ? 'noremap  ' : 'map '
-    let l:expr .= a:cmd.silent  ? '<silent> ' : ''
-    let l:expr .= a:cmd.expr    ? '<expr>   ' : ''
-    let l:expr .= a:cmd.buffer  ? '<buffer> ' : ''
-    let l:expr .= a:cmd.nowait  ? '<nowait> ' : ''
+    let l:expr .= get(a:cmd, 'noremap') ? 'noremap '  : 'map '
+    let l:expr .= get(a:cmd, 'silent' ) ? '<silent> ' : ''
+    let l:expr .= get(a:cmd, 'expr'   ) ? '<expr> '   : ''
+    let l:expr .= get(a:cmd, 'buffer' ) ? '<buffer> ' : ''
+    let l:expr .= get(a:cmd, 'nowait' ) ? '<nowait> ' : ''
     let l:expr .= a:cmd.lhs . ' ' . a:cmd.rhs
 
     execute l:expr
