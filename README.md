@@ -6,7 +6,7 @@ Waltz is a VIM plugin that provides a portable way of mapping the Alt key.
 
 Just add your Alt mappings in your vimrc, and waltz will take care of the rest.
 
-The supported key sequences are:
+The supported key sequences (with some exceptions, depending on your OS and terminal) are:
 
 ```
 <A-[a-z]>
